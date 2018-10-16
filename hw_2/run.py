@@ -17,21 +17,21 @@ print "b) cross section =", cross_sects[1], "cm^2"
 cross_sects[2] = calcCrossSection(density, 10**3, depth)
 print "c) cross section =", cross_sects[2], "cm^2"
 
-"""
+
 print "Problem 3"
 print "Plot frequecy dependant cross section"
 crit_freq = 1000
-freq_range = [1, 2000]
+freq_range = [0, 2000]
 steps = 10000
-std_dev = 50
+std_dev = 100
 for crit_sec in cross_sects:
     cross_sec,freqs = calcFreqCrossSec(freq_range, steps, gaussian, [crit_sec, std_dev, crit_freq])
     plt.figure()
     plt.title(r'$\sigma_{\nu}$ for $\sigma_{\nu,o}=$ %.3e' % crit_sec)
     plt.plot(freqs, cross_sec)
-"""
 
 print "Problem 4"
+print "Plot specific intensities for given cases"
 crit_freq = 1000
 freq_range = [0, 2000]
 # Used for text on dashed lines in plot 

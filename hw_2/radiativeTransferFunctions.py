@@ -25,3 +25,17 @@ def calcSpecIntens(init_intens, cross_sec, source, distance, density, steps):
 		intens[i] = intens[i-1]*np.exp(-opt_depth) + source*(1-np.exp(-opt_depth))
 
 	return intens
+
+# Calculates the cross section as a function of frequency in the shape of a 
+# Gaussian centered at a specfic frequency.
+def calcFreqCrossSec(freq_range, steps, amp, std_dev, crit_freq):
+    # Check that given freq_rane is mcuh larger than FWH
+    FWHM = 2.355 * std_dev
+    if freq_range[1] - crit_freq < 5 * FWHM or crit_freq - freq_range[0] < 5 * FWHM:
+        print FWHM
+        print "Frequency range too small for given standard deviation"
+        return
+    df = (freq_range[1] - freq_range[0])/float(steps)
+    freqs = np.arange(freq_range[0], freq_range[1], df)
+    cross_section = amp * np.exp(-np.power(freqs - crit_freq,2)/(2*std_dev**2))
+    return cross_section, freqs

@@ -35,10 +35,12 @@ def calcFreqCrossSec(freq_range, steps, function, params='None'):
     cross_section = function(params, freqs)
     return cross_section, freqs
 
+# A simple Gaussian function
 def gaussian(params, data):
     amp = params[0]; std_dev = params[1]; center = params[2]
     return amp * np.exp(-np.power(data - center,2)/(2*std_dev**2))
 
+# A constant functoin
 def const(params, data):
     return np.full(np.shape(data),params)
     

@@ -27,13 +27,16 @@ crit_freq = 1000
 freq_range = [0, 2000]
 steps = 10000
 std_dev = 100
-for crit_sec in cross_sects:
+foutname = "problem3"
+titles = ['a','b','c']
+for i,crit_sec in enumerate(cross_sects):
     cross_sec,freqs = calcFreqCrossSec(freq_range, steps, gaussian, [crit_sec, std_dev, crit_freq])
     plt.figure()
     plt.title(r'$\sigma_{\nu}$ for $\sigma_{\nu,o}=$ %.3e' % crit_sec)
     plt.xlabel(r'$\nu$')
     plt.ylabel(r'$\sigma_{\nu}$')
     plt.plot(freqs, cross_sec)
+    plt.savefig(foutname+titles[i]+'.png')
 
 ###############################################################################
 
@@ -149,3 +152,5 @@ ax6.plot(freqs, intensities)
 ax6.set_title(r'$I_{\nu}(0)>S_{\nu}$ and $\tau_{\nu}(D)<1$ while $\tau_{\nu,o}(D)>1$')
 ax6.set_xlim(freq_range)
 ax6.set_xlabel(r'$\nu$')
+
+plt.savefig("problem4.png")

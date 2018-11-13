@@ -16,12 +16,9 @@ def EulerSolver(x0, v0, num_steps, time, func):
 	for i in range(1,num_steps):
 		time[i] = dt * i
 		acc = func(pos_x[i-1],pos_y[i-1],vel_x[i-1],vel_y[i-1],time[i-1])
-		if pos_x[i-1] == 0:
-			angle = -np.pi/2;
-		else:
-			angle = np.arctan(-pos_y[i-1]/pos_x[i-1])
-		acc_x[i-1] = acc * np.cos(angle)
-		acc_y[i-1] = acc * np.sin(angle)
+		angle = np.arctan2(pos_y[i-1],pos_x[i-1])
+		acc_x[i-1] = -acc * np.cos(angle)
+		acc_y[i-1] = -acc * np.sin(angle)
 		vel_x[i] = vel_x[i-1] + dt*acc_x[i-1]
 		pos_x[i] = pos_x[i-1] + dt*vel_x[i-1]
 		vel_y[i] = vel_y[i-1] + dt*acc_y[i-1]
@@ -39,5 +36,5 @@ def electricForce(x, y, vx, vy, t):
 	perm = 8.85E-12;# vacuum permittivity (C V^-1 m^-1)
 	Z = 10;
 	dist = np.sqrt(x**2 + y**2)
-	force = Z*e**2 / (4*np.pi*perm*dist**2)
+	force = Z*e**2 / (4*np.pi*perm*(dist**2))
 	return force / me

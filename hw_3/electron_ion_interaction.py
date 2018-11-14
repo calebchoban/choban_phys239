@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.signal
 
 # Uses Euler Method to determine trajectory of electron interacting with ion
 # Requires intial (x0,y0) position and velocity (vx0,vy0), the total time, and 
@@ -38,3 +39,8 @@ def electricForce(x, y, vx, vy, t):
 	dist = np.sqrt(x**2 + y**2)
 	force = Z*e**2 / (4*np.pi*perm*(dist**2))
 	return force / me
+
+# Computes the power spectrum for given acceleration in x and y
+def powerSpectrum(ax, ay, num_steps, time):
+    freq, sp = scipy.signal.periodogram(ax, num_steps/time)
+    return sp, freq

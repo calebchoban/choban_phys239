@@ -5,6 +5,9 @@ from electron_ion_interaction import *
 
 
 a0 = 5.3E-11 # Bohr radius (m)
+"""
+###############################################################################
+# Single particle trajectory ################################################## 
 
 # Initial conditions in SI units
 # Should have x0 >> y0 and assume overall time is the time it would take
@@ -93,3 +96,87 @@ ax4.xaxis.offsetText.set_fontsize(16)
 ax4.yaxis.offsetText.set_fontsize(16)
 
 plt.savefig("single_interaction.png")
+plt.close()
+"""
+
+###############################################################################
+# Run simulation for various impact parameters and initial velocities to see
+# change in peak frequency in power spectrum
+
+# First look at changes in impact parameters ##################################
+range_y0 = 1000*a0*np.arange(1,10,1);
+impact_param = np.zeros(len(range_y0))
+impact_max_freq = np.zeros(len(range_y0))
+N = 100000;
+
+for i,y0 in enumerate(range_y0):
+    # Initial conditions in SI units
+    # Should have x0 >> y0 and assume overall time is the time it would take
+    # v0 to cross a distance of 2*x0
+    # Need a long T since in order to have good resolution for discrete 
+    # Fourier transform
+    x0 = -100*y0;
+    vx0 = 1E6; vy0 = 0;
+    T = np.abs(2*x0/vx0);
+    
+    
+    pos_x, pos_y, vel_x,vel_y, acc_x, acc_y, time = EulerSolver([x0,y0],[vx0,vy0],N,T,electricForce)
+    
+    # Calculate impact parameter
+    impact_param[i] = pos_y[np.argmin(np.abs(pos_x))]/a0
+    
+    # Calculate power spectrum and zoom in on non-zero regions
+    power_spec, freq = powerSpectrum(acc_x,acc_y,N,T)
+    impact_max_freq[i] = freq[np.argmax(power_spec)]
+
+    
+# Second look at changes in initial velocity ##################################
+range_vx0 = 1E6*np.arange(1,10,1);
+vel_max_freq = np.zeros(len(range_vx0))
+N = 10000
+
+for i,vx0 in enumerate(range_vx0):
+    # Initial conditions in SI units
+    # Should have x0 >> y0 and assume overall time is the time it would take
+    # v0 to cross a distance of 2*x0
+    # Need a long T since in order to have good resolution for discrete 
+    # Fourier transform
+    y0 = 1000*a0; x0 = -100*y0;
+    vy0 = 0;
+    T = np.abs(2*x0/vx0);
+    
+    pos_x, pos_y, vel_x,vel_y, acc_x, acc_y, time = EulerSolver([x0,y0],[vx0,vy0],N,T,electricForce)
+    
+    # Calculate power spectrum and zoom in on non-zero regions
+    power_spec, freq = powerSpectrum(acc_x,acc_y,N,T)
+    vel_max_freq[i] = freq[np.argmax(power_spec)]
+        
+# Plot the results for both
+f, (ax1, ax2) = plt.subplots(1, 2, figsize=[24,12])
+
+# Plot particle trajectory ####################################################
+ax1.set_title("Max Frequency w.r.t Impact Parameter",fontsize=18)
+ax1.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+ax1.tick_params(axis='both', which='major', labelsize=16)
+ax1.tick_params(axis='both', which='minor', labelsize=12)
+ax1.xaxis.offsetText.set_fontsize(16)
+ax1.yaxis.offsetText.set_fontsize(16)
+ax1.plot(impact_param, impact_max_freq)
+ax1.set_xlabel(r'Impact Parameter ($a_{o}$)',fontsize=24)
+ax1.set_ylabel(r'$\omega_{max}$ ($\frac{rad}{s}$)',fontsize=24)
+#aax1.axis('equal')
+
+ax2.set_title("Max Frequency w.r.t Initial Velocity",fontsize=18)
+ax2.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+ax2.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+ax2.tick_params(axis='both', which='major', labelsize=16)
+ax2.tick_params(axis='both', which='minor', labelsize=12)
+ax2.xaxis.offsetText.set_fontsize(16)
+ax2.yaxis.offsetText.set_fontsize(16)
+ax2.plot(range_vx0, vel_max_freq)
+ax2.set_xlabel(r'$v_{x,o}$ ($m/s$)',fontsize=24)
+ax2.set_ylabel(r'$\omega_{max}$ ($\frac{rad}{s}$)',fontsize=24)
+#ax2.axis('equal')
+
+plt.savefig("peak_frequency.png")
